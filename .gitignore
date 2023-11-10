@@ -1,0 +1,4 @@
+# Project exclude paths
+/EproCommon/target/
+/EproMinecraftCore/target/
+/EproMinecraftGame/target/
