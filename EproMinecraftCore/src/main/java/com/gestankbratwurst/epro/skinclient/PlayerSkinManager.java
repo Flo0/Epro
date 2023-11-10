@@ -3,8 +3,9 @@ package com.gestankbratwurst.epro.skinclient;
 import com.gestankbratwurst.epro.EproCore;
 import com.gestankbratwurst.epro.EproGateway;
 import com.gestankbratwurst.epro.gson.GsonSerializer;
-import com.gestankbratwurst.epro.model.GlobalDataObject;
+import com.gestankbratwurst.epro.mongodb.MongoMap;
 import com.google.common.base.Preconditions;
+import com.mongodb.client.MongoCollection;
 import lombok.Getter;
 import org.mineskin.MineskinClient;
 import org.mineskin.SkinOptions;
@@ -18,28 +19,37 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.Flushable;
 import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public class PlayerSkinManager {
+public class PlayerSkinManager implements Flushable {
 
   private static final String SKIN_NAMESPACE = "skin-data";
   private static final String USER_AGENT = "CoreAgent";
+  private static final String UNIVERSAL_KEY = "PlayerSkinManager";
   private static final String API_KEY = "4e4d5e9f0d61a084e0673f99f49fd182280fb670151209f46fdc5c2a38867fdb";
   private static final String KEY_SECRET = "4ee3343aec34213a2df5616b137c6a36f4a0e89884b9b3b4852019b7faa33c4d912d9cd89c78c4b968d0b78d34b0c35d9025b8f7d7da4a78c2ca131ff5c05528";
-
-  public PlayerSkinManager(GsonSerializer gsonSerializer) {
-    this.mineskinClient = new MineskinClient(USER_AGENT, API_KEY);
-    this.globalObject = EproGateway.getDataDomainManager().getOrCreateGlobalObject(new PlayerSkinData(), gsonSerializer, EproCore.CORE_DB, SKIN_NAMESPACE);
-    this.playerSkinData = globalObject.getOrCreateRealTimeData();
-  }
 
   @Getter
   private final PlayerSkinData playerSkinData;
   private final MineskinClient mineskinClient;
-  private final GlobalDataObject<PlayerSkinData> globalObject;
+  private final MongoMap<String, PlayerSkinData> globalObject;
+
+  public PlayerSkinManager(GsonSerializer gsonSerializer) {
+    this.mineskinClient = new MineskinClient(USER_AGENT, API_KEY);
+    MongoCollection<PlayerSkinData> collection = EproGateway.getMongoClient()
+        .getDatabase(EproCore.CORE_DB)
+        .getCollection(SKIN_NAMESPACE, PlayerSkinData.class);
+    this.globalObject = new MongoMap<>(collection, gsonSerializer, String.class);
+    if (globalObject.containsKey(UNIVERSAL_KEY)) {
+      this.playerSkinData = globalObject.get(UNIVERSAL_KEY);
+    } else {
+      this.playerSkinData = new PlayerSkinData();
+    }
+  }
 
   public Skin getSkin(String skinName) {
     return playerSkinData.getSkin(skinName);
@@ -76,15 +86,11 @@ public class PlayerSkinManager {
       skin = this.mineskinClient.getId(id).join();
       skin.timestamp = System.currentTimeMillis();
       this.playerSkinData.addSkin(skin);
-      Skin finalSkin = skin;
-      globalObject.apply(data -> data.addSkin(finalSkin));
     } else if (skin.timestamp + unixWeek + ThreadLocalRandom.current().nextLong(-unixDay, unixDay) < System.currentTimeMillis()) {
       EproCore.getInstance().getLogger().info("Skin with ID [" + id + "] has old cache data. Downloading.");
       skin = this.mineskinClient.getId(id).join();
       skin.timestamp = System.currentTimeMillis();
       playerSkinData.addSkin(skin);
-      Skin finalSkin = skin;
-      globalObject.apply(data -> data.addSkin(finalSkin));
     }
 
     EproCore.getInstance().getLogger().info("Getting Skin with ID [" + id + "] from skin cache.");
@@ -161,4 +167,8 @@ public class PlayerSkinManager {
     return after.getSubimage(0, 0, (int) (w * scaleWidth + 0.5D), ((int) (h * scaleHeight + 0.5D)));
   }
 
+  @Override
+  public void flush() {
+    this.globalObject.put(UNIVERSAL_KEY, this.playerSkinData);
+  }
 }

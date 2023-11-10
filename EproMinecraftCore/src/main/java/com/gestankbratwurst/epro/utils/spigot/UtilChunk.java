@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /*******************************************************
@@ -118,7 +119,7 @@ public class UtilChunk {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDrop(PlayerChunkUnloadEvent event) {
-      chunkViews.get(event.getPlayer().getUniqueId()).remove(event.getChunk().getChunkKey());
+      Optional.ofNullable(chunkViews.get(event.getPlayer().getUniqueId())).ifPresent(inner -> inner.remove(event.getChunk().getChunkKey()));
     }
 
   }

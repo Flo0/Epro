@@ -3,4 +3,5 @@ version: '${project.version}'
 main: com.gestankbratwurst.epro.EproCore
 api-version: 1.19
 authors: [ Gestankbratwurst ]
+load: STARTUP
 description: Core plugin for Epro functionality

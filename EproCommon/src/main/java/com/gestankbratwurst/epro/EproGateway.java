@@ -1,7 +1,6 @@
 package com.gestankbratwurst.epro;
 
 import com.gestankbratwurst.epro.bridge.RemoteEventManager;
-import com.gestankbratwurst.epro.epro.EproNetworkUserManager;
 import com.gestankbratwurst.epro.model.DataDomainManager;
 import com.google.common.base.Preconditions;
 import com.mongodb.MongoClientSettings;
@@ -15,7 +14,6 @@ import org.redisson.config.Config;
 public class EproGateway {
 
   public static final String DEFAULT_EVENT_CHANNEL = "epro-default-message-event-channel";
-  public static final String EPRO_DATABASE_NAME = "epro-db";
 
   private static DataDomainManager dataDomainManager;
   private static MongoClient mongoClient;
@@ -25,7 +23,6 @@ public class EproGateway {
   @Getter
   private static boolean mongodbInitialized = false;
   private static RemoteEventManager remoteEventManager;
-  private static EproNetworkUserManager eproNetworkUserManager;
 
   public static DataDomainManager getDataDomainManager() {
     if (dataDomainManager == null) {
@@ -33,14 +30,6 @@ public class EproGateway {
       dataDomainManager = new DataDomainManager(getRemoteEventManager());
     }
     return dataDomainManager;
-  }
-
-  public static EproNetworkUserManager getEproNetworkUserManager() {
-    if (eproNetworkUserManager == null) {
-      Preconditions.checkState(redissonInitialized && mongodbInitialized, "Redisson and MongoDB need to be initialized.");
-      eproNetworkUserManager = new EproNetworkUserManager(redissonClient, mongoClient);
-    }
-    return eproNetworkUserManager;
   }
 
   public static RemoteEventManager getRemoteEventManager() {

@@ -41,7 +41,7 @@ public class DataMapContext<K, V> extends ContextKey<K, V> {
   }
 
   public MongoMap<K, V> createMapper() {
-    return new MongoMap<>(this.getBackingCollection(), gsonSerializer);
+    return new MongoMap<>(this.getBackingCollection(), gsonSerializer, this.keyClass);
   }
 
   public ContextKey<K, V> asKey() {

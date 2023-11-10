@@ -4,9 +4,11 @@ import com.gestankbratwurst.epro.EproCore;
 import com.gestankbratwurst.epro.actionbar.ActionBarBoard;
 import com.gestankbratwurst.epro.actionbar.ActionBarSection;
 import com.gestankbratwurst.epro.actionbar.ActionLine;
+import com.gestankbratwurst.epro.messaging.Msg;
 import com.gestankbratwurst.epro.tasks.TaskManager;
 import com.gestankbratwurst.epro.teleports.PendingTeleport;
 import com.gestankbratwurst.epro.utils.spigot.UtilGeometry;
+import com.gestankbratwurst.epro.utils.spigot.UtilPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -16,8 +18,8 @@ import org.bukkit.entity.Player;
 
 public class StandardPlayerTeleport extends PendingTeleport {
 
-  private static final double CIRCLE_RADIUS = 1.25;
-  private static final double CIRCLE_HEIGHT_OFFSET = 2.0;
+  private static final double CIRCLE_RADIUS = 1.0;
+  private static final double CIRCLE_HEIGHT_OFFSET = 2.15;
   private static final String TELEPORT_LAYER_ID = "TELEPORT_LAYER";
   private static final int RING_PARTICLE_COUNT = 3;
   private static final int ACTION_PRIORITY = ActionLine.HIGH_PRIORITY;
@@ -60,10 +62,10 @@ public class StandardPlayerTeleport extends PendingTeleport {
     Location from = player.getLocation();
     Location to = this.getTargetLocation();
 
-    from.getWorld().playSound(from, Sound.ENTITY_SHULKER_TELEPORT, 1F, 1.5F);
-    from.getWorld().playSound(from, Sound.ENTITY_ENDERMAN_TELEPORT, 1F, 2.0F);
-    TaskManager.runTaskLater(() -> to.getWorld().playSound(from, Sound.ENTITY_SHULKER_TELEPORT, 1F, 1.5F), 5);
-    TaskManager.runTaskLater(() -> to.getWorld().playSound(from, Sound.ENTITY_ENDERMAN_TELEPORT, 1F, 2.0F), 5);
+    from.getWorld().playSound(from, Sound.ENTITY_SHULKER_TELEPORT, 1F, 1.25F);
+    from.getWorld().playSound(from, Sound.ENTITY_ENDERMAN_TELEPORT, 1F, 0.55F);
+    TaskManager.runTaskLater(() -> to.getWorld().playSound(from, Sound.ENTITY_SHULKER_TELEPORT, 1F, 1.25F), 2);
+    TaskManager.runTaskLater(() -> to.getWorld().playSound(from, Sound.ENTITY_ENDERMAN_TELEPORT, 1F, 0.55F), 2);
 
     TaskManager.runTask(() -> removeActionLayer(player));
   }
@@ -84,6 +86,8 @@ public class StandardPlayerTeleport extends PendingTeleport {
       return;
     }
     removeActionLayer(player);
+    UtilPlayer.failSound(player);
+    Msg.sendWarning(player, "Teleportation wurde abgebrochen.");
   }
 
   private void addActionLayer(Player player) {
@@ -95,7 +99,7 @@ public class StandardPlayerTeleport extends PendingTeleport {
   private String getPendingTeleportTimeDisplay() {
     int ticksRemaining = this.getDelay() - this.getTicksWaiting();
     double seconds = ticksRemaining / 20D;
-    return "§fTeleporting in §e%.1fs".formatted(seconds);
+    return "§fTeleport in §e%.1fs".formatted(seconds);
   }
 
   private void removeActionLayer(Player player) {

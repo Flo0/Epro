@@ -66,4 +66,7 @@ public interface EproCoreConfigurationService {
     return 32;
   }
 
+  default boolean isRedisEnabled() {
+    return false;
+  }
 }

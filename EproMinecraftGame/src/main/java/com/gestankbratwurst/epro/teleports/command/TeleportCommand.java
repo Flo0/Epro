@@ -40,7 +40,7 @@ public class TeleportCommand extends BaseCommand {
     Location base = player.getLocation();
     Vector forward = player.getFacing().getDirection();
     Vector right = forward.clone().crossProduct(new Vector(0, 1, 0)).normalize();
-    Location target = base.clone().add(right.clone().multiply(4));
+    Location target = base.clone().add(right.clone().multiply(7));
     EproMinecraftGame.getTeleportManager().teleportPlayer(player, target, 100);
   }
 

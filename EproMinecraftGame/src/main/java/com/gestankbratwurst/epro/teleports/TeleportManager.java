@@ -1,6 +1,7 @@
 package com.gestankbratwurst.epro.teleports;
 
 import com.gestankbratwurst.epro.EproCore;
+import com.gestankbratwurst.epro.EproMinecraftGame;
 import com.gestankbratwurst.epro.tasks.TaskManager;
 import com.gestankbratwurst.epro.teleports.command.TeleportCommand;
 import com.gestankbratwurst.epro.teleports.impl.StandardPlayerTeleport;
@@ -18,6 +19,7 @@ public class TeleportManager {
   private final Map<UUID, PendingTeleport> pendingTeleports = new HashMap<>();
 
   public TeleportManager() {
+    EproMinecraftGame.register(new TeleportListener(this));
     TaskManager.runTaskTimer(this::tickPendingTeleports, 1, 1);
     EproCore.getPaperCommandManager().registerCommand(new TeleportCommand());
   }

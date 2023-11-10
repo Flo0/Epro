@@ -16,7 +16,7 @@ public class TeleportListener implements Listener {
 
   @EventHandler
   public void onMove(PlayerMoveEvent event) {
-    if (event.hasChangedPosition()) {
+    if (event.hasChangedBlock()) {
       this.teleportManager.interruptTeleport(event.getPlayer().getUniqueId());
     }
   }
