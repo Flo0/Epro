@@ -22,8 +22,10 @@ public class ActionBarSection {
   private final SortedSet<ActionLine> actionLineSet;
   private final Map<ActionLine, BukkitTask> tempTasks;
 
-  public void addLayer(String layerId, int priority, Supplier<String> lineSupplier) {
-    addLayer(new ActionLine(layerId, priority, lineSupplier));
+  public ActionLine addLayer(String layerId, int priority, Supplier<String> lineSupplier) {
+    ActionLine line = new ActionLine(layerId, priority, lineSupplier);
+    addLayer(line);
+    return line;
   }
 
   public void addLayer(ActionLine line) {
@@ -36,7 +38,11 @@ public class ActionBarSection {
   }
 
   public void remove(String key) {
-    removeLayer(new ActionLine(key, 0, (Supplier<String>) null));
+    remove(key, ActionLine.MID_PRIORITY);
+  }
+
+  public void remove(String key, int priority) {
+    removeLayer(new ActionLine(key, priority, (Supplier<String>) null));
   }
 
   public void addTempLayer(long lifeTicks, ActionLine line) {

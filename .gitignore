@@ -2,3 +2,8 @@
 /EproCommon/target/
 /EproMinecraftCore/target/
 /EproMinecraftGame/target/
+*.iml
+*.ipr
+*.iws
+*.class
+*.jar

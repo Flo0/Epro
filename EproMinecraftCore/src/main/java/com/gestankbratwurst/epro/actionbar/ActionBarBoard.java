@@ -35,10 +35,10 @@ public class ActionBarBoard {
     } else {
       middle = Strings.repeat(" ", pad) + middle + Strings.repeat(" ", pad);
       this.currentDisplay = "§f" + StringUtils.leftPad(left, 20) + "§7 "
-              + this.delimiter + " §f"
-              + middle + "§7 "
-              + this.delimiter + " §f"
-              + StringUtils.rightPad(right, 20);
+          + this.delimiter + " §f"
+          + middle + "§7 "
+          + this.delimiter + " §f"
+          + StringUtils.rightPad(right, 20);
     }
   }
 
@@ -51,10 +51,10 @@ public class ActionBarBoard {
     return this.sections[index];
   }
 
+  @Getter
   @AllArgsConstructor
   public enum Section {
     LEFT(0), MIDDLE(1), RIGHT(2);
-    @Getter
     private final int index;
   }
 

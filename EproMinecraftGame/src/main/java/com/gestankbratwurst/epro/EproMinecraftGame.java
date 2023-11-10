@@ -1,10 +1,16 @@
 package com.gestankbratwurst.epro;
 
+import com.gestankbratwurst.epro.teleports.TeleportManager;
+import lombok.Getter;
+
 public final class EproMinecraftGame extends EproPlugin {
+
+  @Getter
+  private static TeleportManager teleportManager;
 
   @Override
   public void onEnable() {
-    // Plugin startup logic
+    teleportManager = new TeleportManager();
 
   }
 
