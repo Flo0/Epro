@@ -1,12 +1,11 @@
 package com.gestankbratwurst.epro.gui.baseimpl;
 
 
-import com.gestankbratwurst.epro.gui.abstraction.GuiHandler;
-
-public abstract class DynamicGui extends GuiHandler {
+public abstract non-sealed class DynamicGUI extends GuiHandler {
 
   @Override
   public void decorate() {
+    this.clearButtons();
     this.setupButtons();
     super.decorate();
   }

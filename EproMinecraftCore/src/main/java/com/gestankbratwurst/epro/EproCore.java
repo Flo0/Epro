@@ -84,10 +84,10 @@ public class EproCore extends JavaPlugin {
     tabListManager = new TabListManager(this, player -> new EmptyTabList());
     tokenActionManager = new TokenActionManager(this, paperCommandManager);
     playerSkinManager = new PlayerSkinManager(new GsonSerializer());
-    guiManager = new GuiManager();
+    guiManager = new GuiManager(this);
 
     Bukkit.getPluginManager().registerEvents(new UtilChunk.ChunkTrackListener(), this);
-    Bukkit.getPluginManager().registerEvents(new GuiListener(), this);
+    Bukkit.getPluginManager().registerEvents(new GuiListener(guiManager), this);
 
     setupResourcepack();
   }

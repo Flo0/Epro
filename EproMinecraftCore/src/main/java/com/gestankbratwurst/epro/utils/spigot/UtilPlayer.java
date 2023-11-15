@@ -6,6 +6,15 @@ import org.bukkit.entity.Player;
 
 public class UtilPlayer {
 
+  public static void playUIClick(Player player) {
+    Sound sound = Sound.sound()
+        .pitch(0.75F)
+        .volume(0.75F)
+        .type(org.bukkit.Sound.UI_BUTTON_CLICK.key())
+        .build();
+    player.playSound(sound, Sound.Emitter.self());
+  }
+
   public static void successSound(Player player) {
     Sound firstSound = Sound.sound()
         .pitch(1.0F)
