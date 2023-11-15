@@ -7,3 +7,5 @@
 *.iws
 *.class
 *.jar
+/.idea/
+/.paper-nms/
