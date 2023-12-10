@@ -63,7 +63,7 @@ public class EproConfiguration implements EproCoreConfigurationService {
 
   @Override
   public boolean isResourcepackEnabled() {
-    return true;
+    return false;
   }
 
   @Override
@@ -80,5 +80,7 @@ public class EproConfiguration implements EproCoreConfigurationService {
   public List<BlockModel> getBlockModels() {
     return List.of();
   }
+
+
 
 }

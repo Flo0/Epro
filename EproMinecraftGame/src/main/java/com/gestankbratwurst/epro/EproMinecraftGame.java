@@ -1,6 +1,10 @@
 package com.gestankbratwurst.epro;
 
 import com.gestankbratwurst.epro.statistics.StatisticManager;
+import com.gestankbratwurst.epro.moderation.ModerationListener;
+import com.gestankbratwurst.epro.playerdata.EproPlayerListener;
+import com.gestankbratwurst.epro.playerdata.EproPlayerManager;
+import com.gestankbratwurst.epro.start.StartCommand;
 import com.gestankbratwurst.epro.tasks.TaskManager;
 import com.gestankbratwurst.epro.teleports.SpawnLocationManager;
 import com.gestankbratwurst.epro.teleports.TeleportManager;
@@ -19,6 +23,8 @@ public final class EproMinecraftGame extends EproPlugin {
   private static SpawnLocationManager spawnLocationManager;
   @Getter
   private static StatisticManager statisticManager;
+  private static EproPlayerManager playerManager;
+
 
   public static void register(Listener listener) {
     Bukkit.getPluginManager().registerEvents(listener, instance);
@@ -33,15 +39,23 @@ public final class EproMinecraftGame extends EproPlugin {
   @Override
   public void onEnable() {
     super.onEnable();
+    // playerManager = new EproPlayerManager();
+    // playerManager.loadAllPlayers();
+    register(new ModerationListener());
     teleportManager = new TeleportManager();
     spawnLocationManager = new SpawnLocationManager();
+
     statisticManager = new StatisticManager();
+    spawnLocationManager.loadSpawn();
+    EproCore.getPaperCommandManager().registerCommand(new StartCommand());
+
     TaskManager.runTaskTimerAsync(() -> TaskManager.runOnIOPool(this::flushData), TICKS_PER_FLUSH, TICKS_PER_FLUSH);
   }
 
   @Override
   public void onDisable() {
     super.onDisable();
+    spawnLocationManager.saveSpawn();
   }
 
   @Override
@@ -52,7 +66,6 @@ public final class EproMinecraftGame extends EproPlugin {
 
   private void flushData() {
     getLogger().info("Flushing data to database...");
-    spawnLocationManager.flush();
   }
 
 }
