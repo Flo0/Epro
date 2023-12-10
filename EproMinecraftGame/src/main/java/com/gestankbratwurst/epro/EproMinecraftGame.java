@@ -1,5 +1,6 @@
 package com.gestankbratwurst.epro;
 
+import com.gestankbratwurst.epro.statistics.StatisticManager;
 import com.gestankbratwurst.epro.moderation.ModerationListener;
 import com.gestankbratwurst.epro.playerdata.EproPlayerListener;
 import com.gestankbratwurst.epro.playerdata.EproPlayerManager;
@@ -21,7 +22,9 @@ public final class EproMinecraftGame extends EproPlugin {
   @Getter
   private static SpawnLocationManager spawnLocationManager;
   @Getter
+  private static StatisticManager statisticManager;
   private static EproPlayerManager playerManager;
+
 
   public static void register(Listener listener) {
     Bukkit.getPluginManager().registerEvents(listener, instance);
@@ -41,8 +44,11 @@ public final class EproMinecraftGame extends EproPlugin {
     register(new ModerationListener());
     teleportManager = new TeleportManager();
     spawnLocationManager = new SpawnLocationManager();
+
+    statisticManager = new StatisticManager();
     spawnLocationManager.loadSpawn();
     EproCore.getPaperCommandManager().registerCommand(new StartCommand());
+
     TaskManager.runTaskTimerAsync(() -> TaskManager.runOnIOPool(this::flushData), TICKS_PER_FLUSH, TICKS_PER_FLUSH);
   }
 
