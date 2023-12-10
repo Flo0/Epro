@@ -2,42 +2,55 @@ package com.gestankbratwurst.epro.teleports;
 
 import com.gestankbratwurst.epro.EproCore;
 import com.gestankbratwurst.epro.EproMinecraftGame;
-import com.gestankbratwurst.epro.mongodb.MongoBackedMap;
 import com.gestankbratwurst.epro.teleports.command.SpawnCommand;
-import com.mongodb.client.MongoCollection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.Flushable;
+import java.io.File;
+import java.io.IOException;
 
-public class SpawnLocationManager implements Flushable {
+public class SpawnLocationManager {
 
-  private static final String SPAWN_LOCATION_KEY = "spawn-location";
-
-  private final MongoBackedMap<String, Location> spawnLocationStore;
+  private Location spawnLocation;
 
   public SpawnLocationManager() {
     EproMinecraftGame.register(new SpawnListener());
     EproCore.getPaperCommandManager().registerCommand(new SpawnCommand());
-    MongoCollection<Location> spawnLocationCollection = EproCore.getDatabase().getCollection(SPAWN_LOCATION_KEY, Location.class);
-    this.spawnLocationStore = new MongoBackedMap<>(spawnLocationCollection, EproCore.getSerializer(), String.class);
-    this.spawnLocationStore.syncLocalToRemote();
   }
 
   public Location getSpawnLocation() {
-    Location location = spawnLocationStore.get(SPAWN_LOCATION_KEY);
-    if (location == null) {
-      return Bukkit.getWorlds().get(0).getSpawnLocation();
+    return spawnLocation == null ? Bukkit.getWorlds().get(0).getSpawnLocation() : spawnLocation;
+  }
+
+  public void setSpawnLocation(Location spawnLocation) {
+    this.spawnLocation = spawnLocation;
+  }
+
+
+  public void saveSpawn() {
+    File file = new File(JavaPlugin.getPlugin(EproMinecraftGame.class).getDataFolder(), "spawn.yml");
+    try {
+      if (!file.exists()) {
+        file.createNewFile();
+      }
+      FileConfiguration configuration = new YamlConfiguration();
+      configuration.set("Spawn", spawnLocation);
+      configuration.save(file);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
-    return location;
   }
 
-  public void setSpawnLocation(Location location) {
-    spawnLocationStore.put(SPAWN_LOCATION_KEY, location);
+  public void loadSpawn() {
+    File file = new File(JavaPlugin.getPlugin(EproMinecraftGame.class).getDataFolder(), "spawn.yml");
+    if (file.exists()) {
+      FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+      spawnLocation = configuration.getLocation("Spawn");
+    }
   }
 
-  @Override
-  public void flush() {
-    spawnLocationStore.syncRemoteToLocal();
-  }
+
 }

@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Subcommand;
 import com.gestankbratwurst.epro.EproMinecraftGame;
 import com.gestankbratwurst.epro.messaging.Msg;
-import com.gestankbratwurst.epro.utils.spigot.UtilPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -22,11 +21,11 @@ public class SpawnCommand extends BaseCommand {
   }
 
   @Subcommand("set")
-  @CommandPermission("epro.spawn.set")
+  @CommandPermission("admin")
   public void onSetSpawn(Player player) {
-    EproMinecraftGame.getSpawnLocationManager().setSpawnLocation(player.getLocation());
-    Msg.sendInfo(player, "Der {} wurde gesetzt.", "Spawn");
-    UtilPlayer.successSound(player);
+    Location location = player.getLocation();
+    EproMinecraftGame.getSpawnLocationManager().setSpawnLocation(location);
+    Msg.sendInfo(player, "Der Spawn wurde gesetzt.");
   }
 
 }

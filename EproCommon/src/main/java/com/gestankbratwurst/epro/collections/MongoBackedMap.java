@@ -1,6 +1,7 @@
-package com.gestankbratwurst.epro.mongodb;
+package com.gestankbratwurst.epro.collections;
 
 import com.gestankbratwurst.epro.gson.GsonSerializer;
+import com.gestankbratwurst.epro.mongodb.MongoMap;
 import com.mongodb.client.MongoCollection;
 
 import java.util.Collection;
@@ -140,17 +141,25 @@ public class MongoBackedMap<K, V> implements Map<K, V> {
     mongoMap.putAll(localMap);
   }
 
-  public void transferFromLocalToRemote(K key) {
-    V value = localMap.remove(key);
+  public void transferFromLocalToRemote(K key, boolean remove) {
+    V value = remove ? localMap.remove(key) : localMap.get(key);
     if (value != null) {
       mongoMap.put(key, value);
     }
   }
 
-  public void transferFromRemoteToLocal(K key) {
-    V value = mongoMap.remove(key);
+  public void transferFromLocalToRemote(K key) {
+    this.transferFromLocalToRemote(key, true);
+  }
+
+  public void transferFromRemoteToLocal(K key, boolean remove) {
+    V value = remove ? mongoMap.remove(key) : mongoMap.get(key);
     if (value != null) {
       localMap.put(key, value);
     }
+  }
+
+  public void transferFromRemoteToLocal(K key) {
+    this.transferFromRemoteToLocal(key, true);
   }
 }
